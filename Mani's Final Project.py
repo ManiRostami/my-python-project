@@ -1,321 +1,241 @@
-import tkinter,sqlite3
-from tkinter import ttk,messagebox
+import tkinter as tk
+from tkinter import ttk, messagebox
+import sqlite3
+import string
 
-class PersonAuthenticator(tkinter.Tk):
+
+class PersonAuthenticator(tk.Tk):
     def __init__(self):
-        tkinter.Tk.__init__(self)
+        super().__init__()
         self.title("Mani's Final Project")
-    def authenticator(self):
-        self.errors=[]
-        self.error_counter=1
-        for i in range(15):
-            #ID
-            if i==0:
-                try:
-                    self.id=int(self.elements_list[i][1].get())
-                except:
-                    self.errors.append(f"{self.error_counter}.ID: You Must Enter Number.")
-                    self.error_counter+=1
-                else:
-                    self.id=self.elements_list[i][1].get()
-                    if len(self.id)==10:
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.ID: You Must Enter 10 Characters.")
-                        self.error_counter+=1
-            #First Name
-            elif i==1:
-                self.first_name_list=(self.elements_list[i][1].get()).split()
-                self.first_name="".join(self.first_name_list)
-                if self.first_name.isalpha():
-                    if len(self.first_name)>3:
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.First Name: You Should Enter More Than 3 Letters.")
-                        self.error_counter+=1
-                else:
-                    self.errors.append(f"{self.error_counter}.First Name: You Should Enter Alphabet Letters.")
-                    self.error_counter+=1
-            #Last Name
-            elif i==2:
-                self.last_name_list=(self.elements_list[i][1].get()).split()
-                self.last_name="".join(self.last_name_list)
-                if self.last_name.isalpha():
-                    if len(self.last_name)>3:
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.Last Name: You Should Enter More Than 3 Letters.")
-                        self.error_counter+=1
-                else:
-                    self.errors.append(f"{self.error_counter}.Last Name: You Should Only Enter Alphabet Letters.")
-                    self.error_counter+=1
-            #Age
-            if i==3:
-                try:
-                    self.age=int(self.elements_list[i][1].get())
-                except:
-                    self.errors.append(f"{self.error_counter}.Age: You Must Enter Integer Number.")
-                    self.error_counter+=1
-                else:
-                    if 1<self.age<120:
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.Age: Enter a Valid Number.")
-                        self.error_counter+=1
-            #Height
-            if i==4:
-                try:
-                    self.height=float(self.elements_list[i][1].get())
-                except:
-                    self.errors.append(f"{self.error_counter}.Height: You Must Enter a Number.")
-                    self.error_counter+=1
-                else:
-                    if 0.4<=self.height<=2.5:
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.Height: Enter a Valid Number.")
-                        self.error_counter+=1
-            #Weight
-            if i==5:
-                try:
-                    self.weight=float(self.elements_list[i][1].get())
-                except:
-                    self.errors.append(f"{self.error_counter}.Weight: You Must Enter a Number.")
-                    self.error_counter+=1
-                else:
-                    if 1.0<=self.weight<=250.0:
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.Weight: Enter a Valid Number.")
-                        self.error_counter+=1
-            #BMI
-            if i==6:
-                try:    
-                    self.elements_list[i][1].config(state="normal")
-                    self.elements_list[6][1].delete(0,tkinter.END)
-                    self.elements_list[i][1].insert(0,f"{"{:.2f}".format(self.weight/self.height)}")
-                    self.elements_list[i][1].config(state="readonly")
-                except:
-                    pass
-            #phone number
-            if i==12 and self.phone_input==True:
-                try:
-                    self.phn=int(self.elements_list[i][1].get())
-                except:
-                        self.errors.append(f"{self.error_counter}.Phone number: You Must Enter A Number.")
-                        self.error_counter+=1
-                else:
-                    self.phn=self.elements_list[i][1].get()
-                    if len(self.phn)==11:
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.Phone number: You Must Enter 11 Characters.")
-                        self.error_counter+=1
-                    if self.phn[0]=="0":
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.Phone number: It Should Start With '0'.")
-                        self.error_counter+=1
-            #mobile number
-            if i==13 and self.mobile_input==True:
-                try:
-                    self.mn=int(self.elements_list[i][1].get())
-                except:
-                        self.errors.append(f"{self.error_counter}.Mobile number: You Must Enter A Number.")
-                        self.error_counter+=1
-                else:
-                    self.mn=self.elements_list[i][1].get()
-                    if len(self.mn)==11:
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.Mobile number: You Must Enter 11 Characters.")
-                        self.error_counter+=1
-                    if self.mn[0]=="0":
-                        pass
-                    else:
-                        self.errors.append(f"{self.error_counter}.Mobile number: It Should Start With '0'.")
-                        self.error_counter+=1
-            if i==14 and self.email_input==True:
-                self.email=self.elements_list[i][1].get()
-                if self.email.count("@")==1 and self.email.count(".")==1:
-                    import string
-                    symbols=list(string.punctuation)
-                    symbols.remove("@")
-                    symbols.remove(".")
-                    i=0
-                    valid=True
-                    while i<len(symbols) and valid:
-                        if symbols[i] in self.email:
-                            valid=False
-                            self.errors.append(f"{self.error_counter}.Email Address: It's Not Valid.")
-                            self.error_counter+=1
-                        i+=1
-                else:
-                    self.errors.append(f"{self.error_counter}.Email Address: It's Not Valid.")
-                    self.error_counter+=1
-                        
-        if len(self.errors)==0:
-            messagebox.showinfo("Authentication","Authentication Successful")
-            self.elements_list[-1][1].config(state="normal")
-        else:
-            self.errors_message="\n".join(self.errors)
-            messagebox.showinfo("Authentication Errors",self.errors_message)
-            self.elements_list[-1][1].config(state="disabled")
+        self.setup_vars()
+        self.setup_ui()
+        self.setup_database()
 
-    def update_connections_entry_state(self):
-        if self.connection_var_list[0].get()==1:
-            self.elements_list[12][1].config(state="normal")
-            self.phone_input=True
-        else:
-            self.elements_list[12][1].config(state="disabled")
-            self.phone_input=False
-        if self.connection_var_list[1].get()==1:
-            self.elements_list[13][1].config(state="normal")
-            self.mobile_input=True
-        else:
-            self.elements_list[13][1].config(state="disabled")
-            self.mobile_input=False
-        if self.connection_var_list[2].get()==1:
-            self.elements_list[14][1].config(state="normal")
-            self.email_input=True
-        else:
-            self.elements_list[14][1].config(state="disabled")
-            self.email_input=False
-
-    def update_towns(self, *args):
-        selected_city = self.elements_list[9][1].get()  # Get the selected city
-        towns = self.city_town_dict.get(selected_city, [])  # Get towns for the selected city
-        self.elements_list[10][1].config(values=towns)  # Update the town ComboBox values
-
-    def get_selected_radio_button_text(self):
-        self.selected_value=self.gender_var.get()
-        radio_button={
-            "male":0,
-            "female":1,
-            "other":2
-        }
-        for i in range (3):
-            for text, value in radio_button.items():
-                if value == self.selected_value:
-                    return text
-
-    def save(self):
-        import sqlite3
-        my_connector=sqlite3.connect("AuthenticationDataBase.db")
-        my_cursor=my_connector.cursor()
-        my_cursor.execute("CREATE TABLE IF NOT EXISTS Informations(ID TEXT, First_Name TEXT, Last_Name TEXT, Age INTEGER, Height REAL, Weight REAL, BMI REAL, Gender TEXT, Soldier_State TEXT, City TEXT, Town TEXT, Phone_Number TEXT, Mobile_Number TEXT, Email_Address TEXT)")
-        my_cursor.execute(f"INSERT INTO Informations VALUES('{self.id}','{self.first_name}','{self.last_name}','{self.age}','{self.height}','{self.weight}','{self.elements_list[6][1].get()}','{self.get_selected_radio_button_text()}','{self.elements_list[8][1].get()}','{self.elements_list[9][1].get()}','{self.elements_list[10][1].get()}','{self.elements_list[12][1].get()}','{self.elements_list[13][1].get()}','{self.elements_list[14][1].get()}')")
-        for i in range(15):
-            if i==7 or i==11:
-                pass
-            else:
-                if i==6:
-                    self.elements_list[i][1].config(state="normal")
-                self.elements_list[i][1].delete(0,tkinter.END)
-                if i==6:
-                    self.elements_list[i][1].config(state="disabled")
-        
-        self.elements_list[-1][1].config(state="disabled")
-        my_connector.commit()
-        my_connector.close()
-
-    def clear(self):
-        for i in range(15):
-            if i==7 or i==11:
-                pass
-            else:
-                if i==6:
-                    self.elements_list[i][1].config(state="normal")
-                self.elements_list[i][1].delete(0,tkinter.END)
-                if i==6:
-                    self.elements_list[i][1].config(state="disabled")
-
-
-    def create(self):
-        self.text_matrix=[["ID:","First Name:","Last Name:","Age:","Height:","Weight:","BMI:","Gender:","Soldier Status:","City:","Town:","Connections:","Phone Number:",
-                           "Mobile Number:","Email Address:","Authenticate"],["Male","Female","Other"],["Phone","Mobile","Email"],["Authenticate","Save","Clear"]]
-        self.elements_list=[[None for i in range(4)] for j in range(16)]
-        #Labels
-        for i in range(len(self.text_matrix[0])-1):
-            self.elements_list[i][0]=tkinter.Label(self,text=self.text_matrix[0][i],font=("Calibri",20))
-        #Buttons
-        for i in range(3):    
-            self.elements_list[-1][i]=tkinter.Button(self,text=self.text_matrix[3][i],font=("Calibri",20),command=self.authenticator)
-            if i==1:
-                self.elements_list[-1][i].config(state="disabled",command=self.save)
-            if i==2:
-                self.elements_list[-1][i].config(command=self.clear)
-        #Entries
-        for i in range(15):
-            self.elements_list[i][1]=tkinter.Entry(self,font=("Calibri",20,"bold"))
-            if i==6:
-                self.elements_list[i][1].config(state="disabled")
-            if i>=12:
-                self.elements_list[i][1].config(state="disabled")
-        #Drop Downs
-        self.checkbuttons_matrix= [["پایان خدمت","کفالت","معافیت موقت","دانش آموز کلاس دوازدهم"],["Tehran","Alborz","Markazi"]]
-        for i in range(2):
-            self.elements_list[8+i][1]=ttk.Combobox(self,values=self.checkbuttons_matrix[i],font=("Calibri",12))
-            if i==0:
-                self.elements_list[8][1].config(state="disabled")
+    def setup_vars(self):
+        self.landline_input = False
+        self.phone_input = False
+        self.email_input = False
+        self.elements_list = [[None for _ in range(4)] for _ in range(16)]
+        self.connection_var_list = [tk.IntVar() for _ in range(3)]
+        self.gender_var = tk.IntVar(value=2)
         self.city_town_dict = {
-            "Tehran": ["Tehran", "Qods", "Shariyar","Eslamshahr","Malard"],
-            "Alborz": ["karaj", "Savojbolagh", "NazarAbad","Taleghan"],
-            "Markazi": ["Arak", "Delijan", "Mahalat","Saveh","Tafresh"]
+            "Tehran": ["Tehran", "Qods", "Shariyar", "Eslamshahr", "Malard"],
+            "Alborz": ["Karaj", "Savojbolagh", "NazarAbad", "Taleghan"],
+            "Markazi": ["Arak", "Delijan", "Mahalat", "Saveh", "Tafresh"]
         }
-        # City ComboBox
+
+    def setup_ui(self):
+        labels = ["ID:", "First Name:", "Last Name:", "Age:", "Height:", "Weight:", "BMI:", "Gender:", "Soldier Status:", "City:", "Town:", "Connections:", "landline Number:", "phone Number:", "Email Address:", "Authenticate"]
+        self.create_labels(labels)
+        self.create_entries()
+        self.create_comboboxes()
+        self.create_radiobuttons()
+        self.create_checkbuttons()
+        self.create_buttons()
+        self.layout_widgets()
+
+    def create_labels(self, labels):
+        for i, text in enumerate(labels[:-1]):
+            self.elements_list[i][0] = tk.Label(self, text=text, font=("Calibri", 20))
+
+    def create_entries(self):
+        for i in range(15):
+            self.elements_list[i][1] = tk.Entry(self, font=("Calibri", 20, "bold"))
+            if i == 6 or i >= 12:
+                self.elements_list[i][1].config(state="disabled")
+
+    def create_comboboxes(self):
+        self.elements_list[8][1] = ttk.Combobox(self, values=["پایان خدمت", "کفالت", "معافیت موقت", "دانش آموز کلاس دوازدهم"], font=("Calibri", 12), state="disabled")
         self.elements_list[9][1] = ttk.Combobox(self, values=list(self.city_town_dict.keys()), font=("Calibri", 12))
         self.elements_list[9][1].bind("<<ComboboxSelected>>", self.update_towns)
-        # Town ComboBox
         self.elements_list[10][1] = ttk.Combobox(self, font=("Calibri", 12))
 
-        #Radio Buttons
-        self.gender_var=tkinter.IntVar()
-        self.gender_var.set(2)
-        self.gender_var.trace_add('write',lambda *args: self.elements_list[8][1].config(state="disabled") if self.gender_var.get()!=0 else self.elements_list[8][1].config(state="normal"))
-        for i in range (3):
-            self.elements_list[7][1+i]=tkinter.Radiobutton(self, text=self.text_matrix[1][i], variable=self.gender_var, value=i)
-        self.phone_input=False
-        self.mobile_input=False
-        self.email_input=False
-        #Check Buttons
-        self.connection_var_list=[]
+    def create_radiobuttons(self):
+        genders = ["Male", "Female","Other"]
+        for i, gender in enumerate(genders):
+            self.elements_list[7][1 + i] = tk.Radiobutton(self, text=gender, variable=self.gender_var, value=i, command=self.update_soldier_status)
+
+    def create_checkbuttons(self):
+        connection_types = ["landline", "phone", "Email"]
+        for i, text in enumerate(connection_types):
+            self.elements_list[11][i + 1] = tk.Checkbutton(self, text=text, variable=self.connection_var_list[i], offvalue=0, onvalue=1, command=self.update_connections_entry_state)
+
+    def create_buttons(self):
+        button_texts = ["Authenticate", "Save", "Clear"]
+        button_cmds = [self.authenticator, self.save, self.clear]
+        for i, (btn_text, cmd) in enumerate(zip(button_texts, button_cmds)):
+            self.elements_list[-1][i] = tk.Button(self, text=btn_text, font=("Calibri", 20), command=cmd)
+            if i == 1:
+                self.elements_list[-1][i].config(state="disabled")
+
+    def layout_widgets(self):
+        for i in range(len(self.elements_list) - 1):
+            self.elements_list[i][0].grid(row=i, column=0, sticky="w")
         for i in range(3):
-            self.connection_var_list.append(tkinter.IntVar())
-            self.elements_list[11][i+1]=tkinter.Checkbutton(self,text=self.text_matrix[2][i],variable=self.connection_var_list[i],offvalue=0,onvalue=1,
-                                                            command=self.update_connections_entry_state)
-    def locate(self):
-        #Labels
-        for i in range(len(self.text_matrix[0])-1):
-            self.elements_list[i][0].grid(row=i,column=0,sticky="w")
-        #Buttons
-        for i in range(3):
-            self.elements_list[-1][i].grid(row=16,column=i,sticky="nsew")
-        #Entries
+            self.elements_list[-1][i].grid(row=16, column=i, sticky="nsew")
         for i in range(15):
-            if 6<i<12:
-                pass
-            else:
-                self.elements_list[i][1].grid(row=i,column=1,columnspan=3)
-        #Drop Downs
+            if not (6 < i < 12):
+                self.elements_list[i][1].grid(row=i, column=1, columnspan=3)
+        self.elements_list[8][1].grid(row=8, column=1, columnspan=3)
+        self.elements_list[9][1].grid(row=9, column=1, columnspan=3)
+        self.elements_list[10][1].grid(row=10, column=1, columnspan=3)
         for i in range(3):
-            self.elements_list[8+i][1].grid(row=8+i,column=1,columnspan=3)
-        # Radio Buttons
+            self.elements_list[7][1 + i].grid(row=7, column=1 + i, columnspan=3, sticky="w")
         for i in range(3):
-            self.elements_list[7][1+i].grid(row=7, column=1+i, columnspan=3, sticky="w")
-        #Check Buttons
-        for i in range(3):
-            self.elements_list[11][i+1].grid(row=11,column=i+1)
+            self.elements_list[11][i + 1].grid(row=11, column=i + 1)
 
-class SQLiteHandler(sqlite3.Connection):
-    pass
+    def setup_database(self):
+        self.conn = sqlite3.connect("person_authenticator.db")
+        self.cursor = self.conn.cursor()
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS persons (
+                id TEXT PRIMARY KEY,
+                first_name TEXT,
+                last_name TEXT,
+                age INTEGER,
+                height REAL,
+                weight REAL,
+                bmi REAL,
+                gender TEXT,
+                soldier_status TEXT,
+                city TEXT,
+                town TEXT,
+                landline_number TEXT,
+                phone_number TEXT,
+                email_address TEXT
+            )
+        ''')
+        self.conn.commit()
 
-class PersonAuthenticatorWithDatabase(PersonAuthenticator, SQLiteHandler):
-    def __init__(self):
-        PersonAuthenticator.__init__(self)
-        SQLiteHandler.__init__(self)
+    def update_soldier_status(self):
+        self.elements_list[8][1].config(state="normal" if self.gender_var.get() == 0 else "disabled")
 
-sample=PersonAuthenticator()
-sample.create()
-sample.locate()
-sample.mainloop()
+    def authenticator(self):
+        validators = {
+            0: self.validate_id,
+            1: lambda: self.validate_text(1, "First Name", min_length=3),
+            2: lambda: self.validate_text(2, "Last Name", min_length=3),
+            3: lambda: self.validate_number(3, "Age", int, 1, 120),
+            4: lambda: self.validate_number(4, "Height", float, 0.4, 2.5),
+            5: lambda: self.validate_number(5, "Weight", float, 1.0, 250.0),
+            6: self.calculate_bmi,
+            12: lambda: self.validate_landline(12, "landline number") if self.landline_input else None,
+            13: lambda: self.validate_landline(13, "phone number") if self.phone_input else None,
+            14: self.validate_email if self.email_input else None,
+        }
+        self.errors = []
+        for i, validator in validators.items():
+            if validator:
+                validator()
+        self.display_results()
+
+    def validate_id(self):
+        id_ = self.elements_list[0][1].get()
+        if len(id_) != 10 or not id_.isdigit():
+            self.errors.append("ID: You must enter 10 numeric characters.")
+
+    def validate_text(self, index, field, min_length):
+        text = "".join(self.elements_list[index][1].get().split())
+        if not text.isalpha() or len(text) <= min_length:
+            self.errors.append(f"{field}: Should be alphabetic and more than {min_length} letters.")
+
+    def validate_number(self, index, field, num_type, min_val, max_val):
+        try:
+            value = num_type(self.elements_list[index][1].get())
+            if not min_val <= value <= max_val:
+                raise ValueError(f"Enter a valid number between {min_val} and {max_val}.")
+        except ValueError as e:
+            self.errors.append(f"{field}: Enter a valid number between {min_val} and {max_val}.")
+
+    def calculate_bmi(self):
+        try:
+            self.elements_list[6][1].config(state="normal")
+            height = float(self.elements_list[4][1].get())
+            weight = float(self.elements_list[5][1].get())
+            bmi_value = weight / (height ** 2)
+            self.elements_list[6][1].delete(0, tk.END)
+            self.elements_list[6][1].insert(0, f"{bmi_value:.2f}")
+            self.elements_list[6][1].config(state="readonly")
+        except:
+            self.elements_list[6][1].config(state="readonly")
+            
+
+    def validate_landline(self, index, field):
+        landline = self.elements_list[index][1].get()
+        if not landline.isdigit() or len(landline) != 11 or landline[0] != '0':
+            self.errors.append(f"{field}: Must be 11 digits and start with 0.")
+
+    def validate_email(self):
+        email = self.elements_list[14][1].get()
+        valid_chars = string.ascii_letters + string.digits + "@_."
+        if len(email) < 5 or not set(email).issubset(set(valid_chars)):
+            self.errors.append("Email: Please enter a valid email address.")
+
+    def display_results(self):
+        if not self.errors:
+            messagebox.showinfo("Validation", "All information is validated.")
+            self.elements_list[-1][1].config(state="normal")
+        else:
+            numbered_errors = "\n".join(f"{idx + 1}. {error}" for idx, error in enumerate(self.errors))
+            messagebox.showwarning("Validation Errors", numbered_errors)
+
+
+    def update_connections_entry_state(self):
+        self.landline_input = self.connection_var_list[0].get()
+        self.phone_input = self.connection_var_list[1].get()
+        self.email_input = self.connection_var_list[2].get()
+
+        self.elements_list[12][1].config(state="normal" if self.landline_input else "disabled")
+        self.elements_list[13][1].config(state="normal" if self.phone_input else "disabled")
+        self.elements_list[14][1].config(state="normal" if self.email_input else "disabled")
+
+    def update_towns(self, event=None):
+        selected_city = self.elements_list[9][1].get()
+        towns = self.city_town_dict.get(selected_city, [])
+        self.elements_list[10][1].config(values=towns)
+        if towns:
+            self.elements_list[10][1].set(towns[0])
+
+    def save(self):
+        try:
+            data = {
+                "id": self.elements_list[0][1].get(),
+                "first_name": self.elements_list[1][1].get(),
+                "last_name": self.elements_list[2][1].get(),
+                "age": int(self.elements_list[3][1].get()),
+                "height": float(self.elements_list[4][1].get()),
+                "weight": float(self.elements_list[5][1].get()),
+                "bmi": float(self.elements_list[6][1].get()),
+                "gender": ["Other", "Male", "Female"][self.gender_var.get()],
+                "soldier_status": self.elements_list[8][1].get() if self.gender_var.get() == 1 else "",
+                "city": self.elements_list[9][1].get(),
+                "town": self.elements_list[10][1].get(),
+                "landline_number": self.elements_list[12][1].get() if self.landline_input else "",
+                "phone_number": self.elements_list[13][1].get() if self.phone_input else "",
+                "email_address": self.elements_list[14][1].get() if self.email_input else ""
+            }
+            self.cursor.execute('''
+                INSERT INTO persons (id, first_name, last_name, age, height, weight, bmi, gender, soldier_status, city, town, landline_number, phone_number, email_address)
+                VALUES (:id, :first_name, :last_name, :age, :height, :weight, :bmi, :gender, :soldier_status, :city, :town, :landline_number, :phone_number, :email_address)
+            ''', data)
+            self.conn.commit()
+            messagebox.showinfo("Success", "Data saved successfully!")
+            self.clear()
+        except sqlite3.IntegrityError:
+            messagebox.showerror("Error", "A person with this ID already exists.")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred while saving: {e}")
+
+    def clear(self):
+        for row in self.elements_list:
+            if row[1] and hasattr(row[1], 'delete'):
+                row[1].delete(0, tk.END)
+        self.elements_list[6][1].config(state="normal")
+        self.elements_list[6][1].delete(0, tk.END)
+        self.elements_list[6][1].config(state="readonly")
+
+
+if __name__ == "__main__":
+    app = PersonAuthenticator()
+    app.mainloop()
